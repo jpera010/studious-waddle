@@ -5,14 +5,12 @@
 #include <vector>
 using namespace std; 
 
-//global constants for player representation
+//global constants
 const int PLAYER1 = 0; 
 const int PLAYER2 = 1;
-int whosTurn = PLAYER1;
-
 const bool CLEAR_SCREEN = true;
 
-//@brief utilizes an escape character sequence to clear the screen
+//uses an escape character sequence to clear the screen
 void clearScreen(){
     cout << endl;
 
@@ -25,10 +23,10 @@ void clearScreen(){
     return;
 }
 
-//@brief draws the provided tic-tac-toe board to the screen
-//@param board is the tic-tac-toe board that should be drawn 
-void drawBoard(const vector < char > &gameBoard){
+//draws the provided tic-tac-toe board to the screen
+void drawBoard(const vector <char> &gameBoard){
     clearScreen();
+
     for(int i = 0; i < 9; i +=3){
         cout << " " << gameBoard.at(i) << "  |  " << gameBoard.at(i+1)
         << "  |  " << gameBoard.at(i+2) << "  " << endl;
@@ -43,25 +41,18 @@ void drawBoard(const vector < char > &gameBoard){
     return;
 }
 
-/*
-brief - fills vector with characters staring at lowercase a 
- */
+//fills vector with characters staring at lowercase a 
 void initVector(vector <char> & v){
     char letter = 'a';
 
-    for (int i = 0; i < v.size(); i++){
+    for (unsigned int i = 0; i < v.size(); i++){
         v.at(i) = letter;
         letter+=1;
     }
     return;
 }
 
-/*
-brief - converts a character representing a cell to associated vector index 
-
-@param - the position to be converted to a vector index 
-@return the integer index in the vector should be 0 to (vector size -1)
- */
+//converts a character representing a cell to associated vector index, uses ascii values
 int convertPosition(char boardPosition){
     int i = 0;
 
@@ -74,51 +65,40 @@ int convertPosition(char boardPosition){
     return (i - 97);
 }
 
-/*
-@brief - predicate function to determine if a spot on the board is available 
-@param - board the current tic-tac-toe board 
-@param position is an index into vector to check if available 
-@return true if positions state is available (not marked) AND is in bounds 
- */
+//determines if a spot on the board is available
 bool validPlacement(const vector<char> &gameBoard, int positionIndex){
-    if((int(gameBoard.at(positionIndex)) == 88) ||(int(gameBoard.at(positionIndex)) == 79) ){
+
+    if(gameBoard.at(positionIndex) == 'X' ||
+       gameBoard.at(positionIndex) == 'O' ){
         return false; 
     }
 
     return true;
 }
 
-/*
-@brief predicate function to determine if the board is full 
-@param board the current tic tac toe board
-@return true iff the board is full (no cell is available)
- */
+//determines if the board is full 
 bool boardFull(const vector<char> &gameBoard) {
+    int count = 0;
 
-    bool isFull;
-
-    for(int i = 0; i < gameBoard.size(); i++){
+    for(unsigned int i = 0; i < gameBoard.size(); i++){
         if(gameBoard.at(i) == 'X' || gameBoard.at(i) == 'O'){
-            isFull = true;
-        }
-        else{
-            isFull = false;
+            count+=1;
         }
     }
-    return isFull;
+
+    if(count == 9){
+        cout << "No one wins - rematch?" << endl;
+        return true;
+    }
+
+    return false;
+
 }
 
-
-/*
-@brief - acquires a play from the user as to where to put her mark 
-    utilizes convertPosition and validPlacement functions to convert the 
-    user input and then determine if the converted input is a valid play 
-
-@param - board the current tic-tac-toe board
-@return an integer index in board vector of a chosen available board spot 
- */
+//acquires a play from the user
+//utilizes convertPosition and validPlacement functions to convert the 
+//user input and then determine if the converted input is a valid play 
 int getPlay(const vector<char> &gameBoard){
-    //todo implement function 
     char boardPosition = ' ';
 
     do{
@@ -135,48 +115,68 @@ int getPlay(const vector<char> &gameBoard){
     return convertPosition(boardPosition);
 }
 
-/*
-@brief - predicate function to determine if the game has been won
 
-    winning conditions in tic-tac-toe require three markes from same player in a single row, column,
-    or diagonal
+//determines if the game has been won
+//winning conditions:three markes from same player in a single row, column,
+//or diagonal
 
-@param - board the current tic tac toe board
-@return true if the game has been won, false otherwise 
- */
-bool gameWon(const vector<char> &gameBoard){
+bool gameWon(const vector<char> &gameBoard, const int whosTurn){
 
     int horizCount = 0;
-    int vertCount = 0;
+    int vertCount = 0; //use 3 seperate counters for easier code legibility/debugging
     int diagCount = 0;
+    char whosMark = ' ';
+
+    whosTurn == PLAYER1 ? whosMark = 'X' : whosMark = 'O';
 
     //check for horizontal win - positions 0,1,2 ; 3,4,5 ; 6,7,8
-    for(int i = 0; i < gameBoard.size(); i++){
 
-        gameBoard.at(i) == 'X' ? horizCount+=1: horizCount = 0;
-        if(horizCount == 3) return true;
+    for(int j = 0; j < 7 ;j=j+3){ //0, 3,6
+        for(unsigned int i = 0+j; i < gameBoard.size()-(6-j); i++){ 
+
+            if(gameBoard.at(i) == whosMark) horizCount+=1;
+            if(horizCount == 3){
+                return true;
+            }
+        }
+        horizCount = 0;
     }
 
     //check for vertical win - positions 0,3,6 ; 1,4,7 ;3,5,8 
     for(int j = 0; j < 3; j++){
-        for(int i = j; i < gameBoard.size()-(2-j); i=i+3){
+        for(unsigned int i = j; i < gameBoard.size()-(2-j); i=i+3){
 
-            gameBoard.at(i) == 'X' ? vertCount+=1: vertCount = 0;
-            if(vertCount == 3) return true;
+            if(gameBoard.at(i) == whosMark) vertCount+=1;
 
+            if(vertCount == 3) {
+                return true;
+            }
         }
+        vertCount = 0;
     }
-    // //check for diagonal win -  positions 0,4,8 ; 2,4,6
-    for(int i = 0; i < 3; i=i+2){
-        for(int j = i; j < gameBoard.size()-i; j=j+4-i){ // 0,0,+4 gives first diagonal,2, -2, +2
-            
-            gameBoard.at(j) == 'X' ? diagCount+=1: diagCount = 0;
-            if(diagCount == 3) return true;
 
+    //check for diagonal win -  positions 0,4,8 ; 2,4,6
+    for(int i = 0; i < 3; i=i+2){
+        for(unsigned int j = i; j < gameBoard.size()-i; j=j+4-i){
+            
+            if(gameBoard.at(j) == whosMark) diagCount+=1;
+
+            if(diagCount == 3) {
+                return true;
+            }
         }
+        diagCount = 0;
     }
 
     return false;
+}
+
+//set the play on the board
+void setPlay(vector <char> &gameBoard, const int curPlay, const int whosTurn){
+
+    whosTurn == PLAYER1 ? gameBoard.at(curPlay) = 'X' : gameBoard.at(curPlay) = 'O';
+
+    return;
 }
 
 #endif
