@@ -117,7 +117,7 @@ int getPlay(const vector<char> &gameBoard){
 
 
 //determines if the game has been won
-//winning conditions:three markes from same player in a single row, column,
+//winning conditions:three marks from same player in a single row, column,
 //or diagonal
 
 bool gameWon(const vector<char> &gameBoard, const int whosTurn){
