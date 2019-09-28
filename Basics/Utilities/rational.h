@@ -20,17 +20,11 @@ class Rational {
         void display() const;
 };
 
-Rational::Rational() : numerator(0), denominator(1){
-    return;
-}
+Rational::Rational() : numerator(0), denominator(1){ return; }
 
-Rational::Rational(int numerator) : numerator(numerator), denominator(1){
-    return;
-}
+Rational::Rational(int numerator) : numerator(numerator), denominator(1){ return; }
 
-Rational::Rational(int numerator, int denominator) : numerator(numerator), denominator(denominator){
-    return;
-}
+Rational::Rational(int numerator, int denominator) : numerator(numerator), denominator(denominator){ return; }
 
 const Rational Rational::add(const Rational& rhs) const{
     //(a/b) + (c/d) = (ad+bc) / (b*d)
@@ -62,7 +56,7 @@ const Rational Rational::divide(const Rational& rhs) const{
 
 void Rational::display() const{
     cout << numerator << " / " << denominator;
-
+    return;
  }
 
 #endif
